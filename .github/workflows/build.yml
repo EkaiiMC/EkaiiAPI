@@ -26,21 +26,3 @@ jobs:
         with:
           name: EkaiiAPI.jar
           path: build/libs/EkaiiAPI-*-all.jar
-      - name: Release Jar (latest)
-        if: github.ref_name == env.branch
-        uses: marvinpinto/action-automatic-releases@latest
-        with:
-          title: "Build #${{ env.workflow }}"
-          automatic_release_tag: latest
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          files: build/libs/EkaiiAPI-*-all.jar
-          prerelease: false
-      - name: Release Jar (History)
-        if: github.ref_name == env.branch
-        uses: marvinpinto/action-automatic-releases@latest
-        with:
-          title: "Build #${{ env.workflow }}"
-          automatic_release_tag: build-${{ env.workflow }}
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          files: build/libs/EkaiiAPI-*-all.jar
-          prerelease: false
