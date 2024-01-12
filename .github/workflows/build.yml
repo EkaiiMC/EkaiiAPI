@@ -3,7 +3,7 @@ on: [ push, pull_request ]
 env:
   branch: main
 jobs:
-  build-and-release:
+  build-jar:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Git Repository
