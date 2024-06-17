@@ -25,7 +25,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: EkaiiAPI.jar
-          path: build/libs/EkaiiAPI-*-all.jar
+          path: build/libs/EkaiiAPI-*.jar
       - name: Release Jar (latest)
         if: github.ref_name == env.branch
         uses: marvinpinto/action-automatic-releases@latest
@@ -33,7 +33,7 @@ jobs:
           title: "Build #${{ env.workflow }}"
           automatic_release_tag: latest
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          files: build/libs/EkaiiAPI-*-all.jar
+          files: build/libs/EkaiiAPI-*.jar
           prerelease: false
       - name: Release Jar (History)
         if: github.ref_name == env.branch
@@ -42,5 +42,5 @@ jobs:
           title: "Build #${{ env.workflow }}"
           automatic_release_tag: build-${{ env.workflow }}
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          files: build/libs/EkaiiAPI-*-all.jar
+          files: build/libs/EkaiiAPI-*.jar
           prerelease: false

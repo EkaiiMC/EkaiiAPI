@@ -25,4 +25,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: EkaiiAPI.jar
-          path: build/libs/EkaiiAPI-*-all.jar
+          path: build/libs/EkaiiAPI-*.jar
