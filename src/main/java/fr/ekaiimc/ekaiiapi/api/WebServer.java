@@ -38,7 +38,16 @@ public class WebServer {
       }
     });
 
-    javalin.routes(() -> {
+    javalin.get("/", ctx -> ctx.result("EkaiiAPI is running !"));
+    javalin.get("/server/ping", ServerController.pingServer);
+    javalin.get("/server/stop", ServerController.stopServer);
+    javalin.get("/server/players", ServerController.getPlayerList);
+    javalin.post("/whitelist/{uuid}", WhitelistController.addPlayerToWhitelist);
+    javalin.delete("/whitelist/{uuid}", WhitelistController.removePlayerFromWhitelist);
+    javalin.get("/whitelist/{uuid}", WhitelistController.isPlayerWhitelisted);
+    javalin.get("/whitelist", WhitelistController.getWhitelistedPlayers);
+
+    /*javalin.routes(() -> {
       path("whitelist", () -> {
         path("{uuid}", () -> {
           post(WhitelistController.addPlayerToWhitelist);
@@ -53,7 +62,7 @@ public class WebServer {
         get("stop", ServerController.stopServer);
         get("players", ServerController.getPlayerList);
       });
-    });
+    });*/
 
     javalin.start(port);
   }
