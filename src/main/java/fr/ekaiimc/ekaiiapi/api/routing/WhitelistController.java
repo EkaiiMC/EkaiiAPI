@@ -7,6 +7,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.UUID;
 
 public class WhitelistController {
@@ -19,11 +21,13 @@ public class WhitelistController {
       throw new HttpResponseException(400, "Bad Request");
     }
     try {
-      (new WhitelistChangeRunner(playerUuid, true)).runTask(JavaPlugin.getPlugin(EkaiiAPI.class));
+      Bukkit.getServer().getGlobalRegionScheduler().execute(JavaPlugin.getPlugin(EkaiiAPI.class), new WhitelistChangeRunner(playerUuid, true));
 
       ctx.json(new WhitelistAddRemoveGetResponse(200, "OK", playerUuid, true));
     } catch (Exception e) {
-      Bukkit.getLogger().severe(e.getMessage());
+      StringWriter sw = new StringWriter();
+      e.printStackTrace(new PrintWriter(sw));
+      EkaiiAPI.getPlugin(EkaiiAPI.class).getLogger().severe(sw.toString());
       throw new HttpResponseException(500, "Internal server error");
     }
   };
@@ -36,11 +40,13 @@ public class WhitelistController {
       throw new HttpResponseException(400, "Bad Request");
     }
     try {
-      (new WhitelistChangeRunner(playerUuid, false)).runTask(JavaPlugin.getPlugin(EkaiiAPI.class));
+      Bukkit.getServer().getGlobalRegionScheduler().execute(JavaPlugin.getPlugin(EkaiiAPI.class), new WhitelistChangeRunner(playerUuid, false));
 
       ctx.json(new WhitelistAddRemoveGetResponse(200, "OK", playerUuid, false));
     } catch (Exception e) {
-      Bukkit.getLogger().severe(e.getMessage());
+      StringWriter sw = new StringWriter();
+      e.printStackTrace(new PrintWriter(sw));
+      EkaiiAPI.getPlugin(EkaiiAPI.class).getLogger().severe(sw.toString());
       throw new HttpResponseException(500, "Internal server error");
     }
   };
@@ -56,16 +62,20 @@ public class WhitelistController {
       ctx.json(new WhitelistAddRemoveGetResponse(200, "OK", playerUuid, Bukkit.getOfflinePlayer(playerUuid).isWhitelisted()));
 
     } catch (Exception e) {
-      Bukkit.getLogger().severe(e.getMessage());
+      StringWriter sw = new StringWriter();
+      e.printStackTrace(new PrintWriter(sw));
+      EkaiiAPI.getPlugin(EkaiiAPI.class).getLogger().severe(sw.toString());
       throw new HttpResponseException(500, "Internal server error");
     }
   };
 
   public static Handler getWhitelistedPlayers = ctx -> {
     try {
-      ctx.json(new WhitelistGetAllResponse(200, "OK", Bukkit.getWhitelistedPlayers().stream().map(player -> player.getUniqueId().toString()).toArray(String[]::new)));
+      ctx.json(new WhitelistGetAllResponse(200, "OK", Bukkit.getWhitelistedPlayers().stream().map(offlinePlayer -> new WhitelistPlayer(offlinePlayer.getUniqueId(), offlinePlayer.getName())).toArray(WhitelistPlayer[]::new)));
     } catch (Exception e) {
-      Bukkit.getLogger().severe(e.getMessage());
+      StringWriter sw = new StringWriter();
+      e.printStackTrace(new PrintWriter(sw));
+      EkaiiAPI.getPlugin(EkaiiAPI.class).getLogger().severe(sw.toString());
       throw new HttpResponseException(500, "Internal server error");
     }
   };
@@ -73,7 +83,10 @@ public class WhitelistController {
   public record WhitelistAddRemoveGetResponse(int code, String statusText, UUID playerUuid, boolean isWhitelisted) {
   }
 
-  public record WhitelistGetAllResponse(int code, String statusText, String[] whitelistedPlayers) {
+  public record WhitelistGetAllResponse(int code, String statusText, WhitelistPlayer[] whitelistedPlayers) {
+  }
+
+  public record WhitelistPlayer(UUID playerUuid, String playerName) {
   }
 
   public static class WhitelistChangeRunner extends BukkitRunnable {
@@ -90,5 +103,6 @@ public class WhitelistController {
       Bukkit.getOfflinePlayer(playerUuid).setWhitelisted(isWhitelisted);
     }
   }
+
 
 }
