@@ -9,6 +9,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.time.Instant;
+import java.time.format.DateTimeFormatterBuilder;
+import java.util.Date;
 import java.util.UUID;
 
 public class WhitelistController {
@@ -71,7 +74,7 @@ public class WhitelistController {
 
   public static Handler getWhitelistedPlayers = ctx -> {
     try {
-      ctx.json(new WhitelistGetAllResponse(200, "OK", Bukkit.getWhitelistedPlayers().stream().map(offlinePlayer -> new WhitelistPlayer(offlinePlayer.getUniqueId(), offlinePlayer.getName())).toArray(WhitelistPlayer[]::new)));
+      ctx.json(new WhitelistGetAllResponse(200, "OK", Bukkit.getWhitelistedPlayers().stream().map(offlinePlayer -> new WhitelistPlayer(offlinePlayer.getUniqueId(), offlinePlayer.getName(), Instant.ofEpochMilli(offlinePlayer.getLastLogin()).toString(), offlinePlayer.isOnline())).toArray(WhitelistPlayer[]::new)));
     } catch (Exception e) {
       StringWriter sw = new StringWriter();
       e.printStackTrace(new PrintWriter(sw));
@@ -86,7 +89,7 @@ public class WhitelistController {
   public record WhitelistGetAllResponse(int code, String statusText, WhitelistPlayer[] whitelistedPlayers) {
   }
 
-  public record WhitelistPlayer(UUID playerUuid, String playerName) {
+  public record WhitelistPlayer(UUID playerUuid, String playerName, String lastLogin, boolean isOnline) {
   }
 
   public static class WhitelistChangeRunner extends BukkitRunnable {
