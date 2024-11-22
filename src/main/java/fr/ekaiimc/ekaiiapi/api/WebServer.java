@@ -38,10 +38,11 @@ public class WebServer {
       }
     });
 
-    javalin.get("/", ctx -> ctx.result("EkaiiAPI is running !"));
+    javalin.get("/", ctx -> ctx.json(new RootMessage("EkaiiAPI", "1.0.0")));
     javalin.get("/server/ping", ServerController.pingServer);
     javalin.get("/server/stop", ServerController.stopServer);
     javalin.get("/server/players", ServerController.getPlayerList);
+    javalin.get("/server/banned", ServerController.getBannedPlayers);
     javalin.post("/whitelist/{uuid}", WhitelistController.addPlayerToWhitelist);
     javalin.delete("/whitelist/{uuid}", WhitelistController.removePlayerFromWhitelist);
     javalin.get("/whitelist/{uuid}", WhitelistController.isPlayerWhitelisted);
@@ -70,4 +71,6 @@ public class WebServer {
   public void stop() {
     javalin.stop();
   }
+
+  public record RootMessage(String application, String version) {}
 }
